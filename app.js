@@ -1,46 +1,44 @@
-require("dotenv").config(); // Load environment variables from .env
 const express = require("express");
-const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
-const fs = require("fs");
+const cors = require("cors");
+require("dotenv").config();
 
-// Initialize Express App
 const app = express();
-const port = 3019;
 
-// Cloudinary Configuration
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+// Define allowed origins
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://localhost:5000",
+  "https://www.truthcitadelbc.com",
+];
 
-// Multer setup to store the uploaded file in a temp folder
-const upload = multer({ dest: "uploads/" });
+// Set up CORS middleware
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
 
-// API Endpoint to Upload Image
-app.post("/upload", upload.single("image"), (req, res) => {
-  const path = req.file.path;
-
-  // Upload to Cloudinary
-  cloudinary.uploader.upload(path, (error, result) => {
-    if (error) {
-      console.error("Upload Error:", error);
-      return res.status(500).json({ error: "Upload to Cloudinary failed!" });
+    // Allow only origins in the allowedOrigins array
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
     }
+  },
+  optionsSuccessStatus: 200, // For legacy browser support
+};
 
-    // Delete the file from the local server after upload
-    fs.unlinkSync(path);
+// Apply CORS with the options
+app.use(cors(corsOptions));
 
-    // Respond with Cloudinary URL
-    res.json({
-      message: "Image uploaded successfully!",
-      url: result.secure_url,
-    });
-  });
+const port = process.env.PORT || 3019;
+
+// Sample route for testing
+app.get("/", (req, res) => {
+  res.json({ message: "CORS-enabled for allowed origins!" });
 });
 
-// Start the Server
-app.listen(port, "0.0.0.0", () => {
-  console.log(`Server running on http://0.0.0.0:${port}`);
+// Start the server
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
