@@ -63,7 +63,7 @@ const upload = multer({
 });
 
 // API Endpoint to Upload Files
-app.post("/upload", upload.single("file"), (req, res) => {
+app.post("/upload", upload.single("image"), (req, res) => {
   const path = req.file.path;
   const fileType = req.file.mimetype.split("/")[0]; // get file type (image, video, application)
 
