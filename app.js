@@ -15,6 +15,7 @@ const allowedOrigins = [
   "http://localhost:5000",
   "http://localhost",
   "https://www.truthcitadelbc.com",
+    "https://truthcitadelbc.com",
 ];
 
 // Set up CORS middleware
