@@ -66,7 +66,7 @@ const upload = multer({
 // API Endpoint to Upload Files
 app.post("/upload", upload.single("image"), (req, res) => {
   const path = req.file.path;
-  const fileType = req.file.mimetype.split("/")[0]; // get file type (image, video, application)
+  const fileType = req.file.mimetype.split("/")[0];  
 
   // Determine Cloudinary resource type (image, video, raw)
   let resourceType = "image"; // default to image
